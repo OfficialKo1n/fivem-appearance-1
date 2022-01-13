@@ -162,7 +162,7 @@ local function getPedAppearance(ped)
 		components = getPedComponents(ped),
 		props = getPedProps(ped),
 		hair = getPedHair(ped),
-		eyeColor = eyeColor < #constants.EYE_COLORS or 0
+		eyeColor = eyeColor < #constants.EYE_COLORS and eyeColor or 0
 	}
 end
 
