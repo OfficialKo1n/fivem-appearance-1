@@ -178,7 +178,7 @@ local function getAppearanceSettings()
 		headOverlays = headOverlays,
 		hair = hair,
 		eyeColor = eyeColor,
-	  }
+	}
 end
 client.getAppearanceSettings = getAppearanceSettings
 

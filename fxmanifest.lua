@@ -21,8 +21,7 @@ client_scripts {
 files {
   'web/build/index.html',
   'web/build/static/js/*.js',
-  'locales/*.json',
-  'peds.json'
+  'locales/*.json'
 }
 
 ui_page 'web/build/index.html'
