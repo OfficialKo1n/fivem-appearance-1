@@ -166,13 +166,10 @@ const Appearance = () => {
 
   const handleModelChange = useCallback(
     async (value: string) => {
-      const { appearanceSettings: _appearanceSettings, appearanceData } = await Nui.post(
-        'appearance_change_model',
-        value,
-      );
+      const [_settings, _data] = await Nui.post('appearance_change_model', value);
 
-      setAppearanceSettings(_appearanceSettings);
-      setData(appearanceData);
+      setAppearanceSettings(_settings);
+      setData(_data);
     },
     [setData, setAppearanceSettings],
   );
@@ -400,16 +397,11 @@ const Appearance = () => {
   useEffect(() => {
     if (display.appearance) {
       (async () => {
-        const {
-          config: _config,
-          appearanceSettings: settings,
-          appearanceData,
-        } = await Nui.post('appearance_get_settings_and_data');
-
+        const [_config, _data, _settings] = await Nui.post('appearance_get_settings_and_data');
         setConfig(_config);
-        setAppearanceSettings(settings);
-        setStoredData(appearanceData);
-        setData(appearanceData);
+        setAppearanceSettings(_settings);
+        setStoredData(_data);
+        setData(_data);
       })();
     }
   }, [display.appearance]);
