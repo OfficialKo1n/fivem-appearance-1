@@ -39,7 +39,7 @@ This is a development resource, if you don't use the exports the resource itself
 
 ## Events
 
-- `fivem-appearance:toggleUI` (_boolean_)  
+- `fivem-appearance:uiStateChanged` (_boolean_)  
 This client event is triggered each time the interface is opened or closed.  
 The first and only parameter indicates current state of the interface:  
   - `true` - opened
