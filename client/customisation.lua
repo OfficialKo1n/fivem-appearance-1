@@ -298,7 +298,6 @@ function client.startPlayerCustomization(cb, _config)
 	TaskStandStill(playerPed, -1)
 
 	if toggleRadar then DisplayRadar(false) end
-	TriggerEvent('fivem-appearance:uiStateChanged', true)
 
 	local nuiMessage = {
 		type = 'appearance_display',
@@ -314,7 +313,6 @@ function client.exitPlayerCustomization(appearance)
 	SetNuiFocus(false, false)
 
 	if toggleRadar then DisplayRadar(true) end
-	TriggerEvent('fivem-appearance:uiStateChanged', false)
 
 	local playerPed = PlayerPedId()
 

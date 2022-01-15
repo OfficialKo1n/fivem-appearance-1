@@ -37,14 +37,6 @@ Go to releases and get the latest version.
 
 This is a development resource, if you don't use the exports the resource itself will do nothing.
 
-## Events
-
-- `fivem-appearance:uiStateChanged` (_boolean_)  
-This client event is triggered each time the interface is opened or closed.  
-The first and only parameter indicates current state of the interface:  
-  - `true` - opened
-  - `false` - closed
-
 ## Convars
 
 Since this is a client script, you will need to use **setr** to set these convars.
