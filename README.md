@@ -37,11 +37,15 @@ Go to releases and get the latest version.
 
 This is a development resource, if you don't use the exports the resource itself will do nothing.
 
-## ConVars
+## Convars
 
 Since this is a client script, you will need to use **setr** to set these convars.
 
-- **fivem-appearance:locale**: the name of one file inside `locales/`, default **en**, choose the locale file for the customization interface.
+| Convar                  | Default | Type   | Description
+| ---                     | ---     | ---    | ---
+| fivem-appearance:locale | "en"    | string | Name of a file inside `locales/`. Choose the locale file for the customization interface.
+| fivem-appearance:radar  | 1       | int    | Enables hiding/showing the radar when opening the customization interface.
+
 
 config.cfg example:
 
@@ -75,13 +79,6 @@ ensure fivem-appearance
 | setPedEyeColor      | ped: _number_, eyeColor: _number_              | _void_            |
 | setPlayerAppearance | appearance: _PedAppearance_                    | _void_            |
 | setPedAppearance    | ped: _number_, appearance: _PedAppearance_     | _void_            |
-
-### Customization
-
-This export is only available if **fivem-appearance:customization** is set to 1.
-
-| Export                   | Parameters                                                                                    | Return |
-| ------------------------ | --------------------------------------------------------------------------------------------- | ------ |
 | startPlayerCustomization | callback: _((appearance: PedAppearance \| undefined) => void)_, config? _CustomizationConfig_ | _void_ |
 
 ## Examples
@@ -99,8 +96,8 @@ RegisterCommand('customization', function()
     props = true,
   }
 
-  exports['fivem-appearance']:startPlayerCustomization(function (appearance)
-    if (appearance) then
+  exports['fivem-appearance']:startPlayerCustomization(function(appearance)
+    if appearance then
       print('Saved')
     else
       print('Canceled')

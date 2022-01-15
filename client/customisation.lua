@@ -277,6 +277,7 @@ client.pedTurnAround = pedTurnAround
 local playerHeading
 function client.getHeading() return playerHeading end
 
+local toggleRadar = GetConvarInt('fivem-appearance:radar', 1) == 1
 local callback
 function client.startPlayerCustomization(cb, _config)
 	local playerPed = PlayerPedId()
@@ -293,9 +294,10 @@ function client.startPlayerCustomization(cb, _config)
 	SetNuiFocus(true, true)
 	SetNuiFocusKeepInput(false)
 	RenderScriptCams(true, false, 0, true, true)
-	DisplayRadar(false)
 	SetEntityInvincible(playerPed, true)
 	TaskStandStill(playerPed, -1)
+
+	if toggleRadar then DisplayRadar(false) end
 
 	local nuiMessage = {
 		type = 'appearance_display',
@@ -308,8 +310,9 @@ end
 function client.exitPlayerCustomization(appearance)
 	RenderScriptCams(false, false, 0, true, true)
 	DestroyCam(cameraHandle, false)
-	DisplayRadar(true)
 	SetNuiFocus(false, false)
+
+	if toggleRadar then DisplayRadar(true) end
 
 	local playerPed = PlayerPedId()
 
