@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  create-release:
+    name: Build and Create Tagged Pre release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install archive tools
+        run: sudo apt install zip
+
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Get variables
+        id: get_vars
+        run: |
+          echo '::set-output name=SHORT_SHA::$(git rev-parse --short HEAD)'
+          echo '::set-output name=DATE::$(date +'%D')'
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: "yarn"
+          cache-dependency-path: "web/yarn.lock"
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+        working-directory: web
+
+      - name: Run build
+        run: yarn build
+        working-directory: web
+        env:
+          CI: false
+
+      - name: Bundle files
+        run: |
+          mkdir -p ./temp/fivem-appearance
+          mkdir -p ./temp/fivem-appearance/web
+          cp ./{README.md,LICENSE,fxmanifest.lua,} ./temp/fivem-appearance
+          cp -r ./{client,locales,server} ./temp/fivem-appearance
+          cp -r ./web/build ./temp/fivem-appearance/web/build
+          cd ./temp && zip -r ../fivem-appearance.zip ./fivem-appearance
+      - name: Create Release
+        uses: "marvinpinto/action-automatic-releases@v1.2.1"
+        id: auto_release
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          title: "${{ env.RELEASE_VERSION }}"
+          prerelease: false
+          files: fivem-appearance.zip
+
+        env:
+          CI: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
