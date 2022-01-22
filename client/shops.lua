@@ -103,8 +103,9 @@ local function getClosestShop(currentShop, coords)
 			if IsControlJustReleased(0, 38) then
 				client.startPlayerCustomization(function(appearance)
 					if (appearance) then
-						--todo: trigger save event
-						print('Saved')
+						if ESX then
+							TriggerServerEvent('esx_skin:save', appearance)
+						end
 					end
 				end, config[shopType])
 			end

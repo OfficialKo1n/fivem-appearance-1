@@ -351,4 +351,3 @@ AddEventHandler('onResourceStop', function(resource)
 end)
 
 exports('startPlayerCustomization', client.startPlayerCustomization)
-
