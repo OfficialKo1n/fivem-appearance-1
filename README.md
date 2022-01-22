@@ -1,41 +1,34 @@
-# fivem-appearance
+# ox_appearance
 
-A flexible player customization script for FiveM.
+A fork of [fivem-appearance](https://github.com/pedr0fontoura/fivem-appearance/) written in Lua and providing some niche changes.
 
-This resource was designed to manage all GTA V player/ped customization in only one place, with an opinionated way to handle the data.
+- Refer to the link above for all standard features.
+- Basic support for ESX using skinchanger and esx_skin event handlers.
+- Clothing stores and barber shops.
 
-## Features
+Appearance data can be saved to server-kvp, but requires setup to use included exports.  
+Data is stored as `identifier:appearance`, where identifier can be any unique identifying value, i.e.  
+- rockstar license
+- citizenid
+- auto-incrementing id
+```lua
+-- Example using cfx-server-data/player-data with a statebag
+local id = Player(source).state['cfx.re/playerData@id']
+local appearance = exports['fivem-appearance']:loadAppearance(source, id)
 
-- Freemode ped full customization (Head blend, Face features, Head overlays, Components, Props).
-- Exports API to get and set every part of player/ped appearance.
-- [Built-in customization feature](https://streamable.com/t59gdt "Preview").
+-- Example using ESX, if moving away from storing skin in the database
+local skin = exports['fivem-appearance']:loadAppearance(xPlayer.source, xPlayer.identifier)
+```
 
 ## Preview
+
+
+<h3 align='center'><a href='https://streamable.com/t59gdt'>Video preview</a></h3>
+
 
 ![Customization Preview](https://imgur.com/VgNAvgC.png "Customization Preview")
 ![Customization Preview](https://i.imgur.com/wzY7XNu.png "Customization Preview")
 ![Customization Preview](https://imgur.com/B0m6g6q.png "Customization Preview")
-
-## Installation
-
-**Download**
-
-Go to releases and get the latest version.
-
-**Build yourself**
-
-1. Clone the repository into your `resources/[local]` folder.
-2. Execute the build script.
-
-   ```bash
-   yarn build
-   ```
-
-3. Start development.
-
-**Disclaimer**
-
-This is a development resource, if you don't use the exports the resource itself will do nothing.
 
 ## Convars
 
