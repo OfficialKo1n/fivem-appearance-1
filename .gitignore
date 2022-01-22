@@ -1,9 +1,2 @@
-release/
-
-game/node_modules/
-game/build/
-game/yarn.lock
-
 web/node_modules/
 web/build/
-web/yarn.lock
