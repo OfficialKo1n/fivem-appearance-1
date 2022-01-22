@@ -21,13 +21,29 @@ if GetResourceState('es_extended'):find('start') then
 	end)
 end
 
-local function saveAppearance(identifier, appearance)
-	SetResourceKvp(identifier..':skin', msgpack.pack(appearance))
+local identifiers = {}
+
+local function saveAppearance(source, appearance)
+	SetResourceKvp(identifier..':appearance', msgpack.pack(appearance))
 end
 exports('save', saveAppearance)
 
-local function loadAppearance(identifier)
-	local appearance = GetResourceKvpString(identifier..':skin')
+local function loadAppearance(source, identifier)
+	local appearance = GetResourceKvpString(identifier..':appearance')
+	identifiers[source] = identifier
+
 	return appearance and msgpack.unpack(appearance) or {}
 end
 exports('load', loadAppearance)
+
+RegisterNetEvent('fivem-appearance:save', function(appearance)
+	local identifier = identifiers[source]
+
+	if identifier then
+		saveAppearance(identifier, appearance)
+	end
+end)
+
+AddEventHandler('playerDropped', function()
+	identifiers[source] = nil
+end)

@@ -105,6 +105,8 @@ local function getClosestShop(currentShop, coords)
 					if (appearance) then
 						if ESX then
 							TriggerServerEvent('esx_skin:save', appearance)
+						else
+							TriggerServerEvent('fivem-appearance:save', appearance)
 						end
 					end
 				end, config[shopType])
