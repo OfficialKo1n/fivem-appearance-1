@@ -20,3 +20,14 @@ if GetResourceState('es_extended'):find('start') then
 		cb(appearance)
 	end)
 end
+
+local function saveAppearance(identifier, appearance)
+	SetResourceKvp(identifier..':skin', msgpack.pack(appearance))
+end
+exports('save', saveAppearance)
+
+local function loadAppearance(identifier)
+	local appearance = GetResourceKvpString(identifier..':skin')
+	return appearance and msgpack.unpack(appearance) or {}
+end
+exports('load', loadAppearance)
