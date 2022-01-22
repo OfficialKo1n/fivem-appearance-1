@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir -p ./temp/fivem-appearance
           mkdir -p ./temp/fivem-appearance/web
-          cp ./{README.md,LICENSE,fxmanifest.lua,} ./temp/fivem-appearance
+          cp ./{README.md,LICENSE,fxmanifest.lua} ./temp/fivem-appearance
           cp -r ./{client,locales,server} ./temp/fivem-appearance
           cp -r ./web/build ./temp/fivem-appearance/web/build
           cd ./temp && zip -r ../fivem-appearance.zip ./fivem-appearance
