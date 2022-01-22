@@ -147,7 +147,10 @@ local function getPedHairDecoration(ped, hairStyle)
 	local hairType = getPedHairDecorationType(ped)
 
 	if hairType then
-		return constants.HAIR_DECORATIONS[hairType][hairStyle] or constants.HAIR_DECORATIONS[hairType][0]
+		if hairStyle and constants.HAIR_DECORATIONS[hairType][hairStyle] then
+			return constants.HAIR_DECORATIONS[hairType][hairStyle]
+		end
+		return constants.HAIR_DECORATIONS[hairType][0]
 	end
 end
 
@@ -218,15 +221,16 @@ local function setPedHeadOverlays(ped, headOverlays)
 end
 
 local function setPedHair(ped, hair)
+	local hairDecoration = getPedHairDecoration(ped, hair?.style)
+
 	if hair then
 		SetPedComponentVariation(ped, 2, hair.style, 0, 0)
 		SetPedHairColor(ped, hair.color, hair.highlight)
-		local hairDecoration = getPedHairDecoration(ped, hair.style)
 		ClearPedDecorations(ped)
+	end
 
-		if hairDecoration then
-			AddPedDecorationFromHashes(ped, hairDecoration[1], hairDecoration[2])
-		end
+	if hairDecoration then
+		AddPedDecorationFromHashes(ped, hairDecoration[1], hairDecoration[2])
 	end
 end
 
@@ -280,8 +284,8 @@ local function setPedAppearance(ped, appearance)
 		if appearance.headBlend then setPedHeadBlend(ped, appearance.headBlend) end
 		if appearance.faceFeatures then setPedFaceFeatures(ped, appearance.faceFeatures) end
 		if appearance.headOverlays then setPedHeadOverlays(ped, appearance.headOverlays) end
-		if appearance.hair then setPedHair(ped, appearance.hair) end
 		if appearance.eyeColor then setPedEyeColor(ped, appearance.eyeColor) end
+		setPedHair(ped, appearance.hair)
 	end
 end
 
