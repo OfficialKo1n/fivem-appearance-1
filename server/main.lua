@@ -19,6 +19,62 @@ if GetResourceState('es_extended'):find('start') then
 
 		cb(appearance)
 	end)
+
+	ESX.RegisterServerCallback('esx_skin:BuyOutfit', function(source, cb, price)
+		local xPlayer = ESX.GetPlayerFromId(source)
+		local playerMoney = xPlayer.getMoney()
+	
+		if playerMoney >= price then
+			xPlayer.removeMoney(price)		
+			xPlayer.showNotification('You paid $'..price)
+			cb(true)
+		else
+			xPlayer.showNotification('You dont have enough money, missing $'..(price - playerMoney))
+			cb(false)
+		end
+	end)
+
+	RegisterServerEvent("esx_skin:saveOutfit")
+	AddEventHandler("esx_skin:saveOutfit", function(name, pedModel, pedComponents, pedProps)
+		local xPlayer = ESX.GetPlayerFromId(source)
+
+		MySQL.Async.insert('INSERT INTO `outfits` (`identifier`, `name`, `ped`, `components`, `props`) VALUES (@identifier, @name, @ped, @components, @props)', {
+			['@ped'] = json.encode(pedModel),
+			['@components'] = json.encode(pedComponents),
+			['@props'] = json.encode(pedProps),
+			['@name'] = name,
+			['@identifier'] = xPlayer.identifier
+		})
+	end)
+
+
+	RegisterServerEvent("esx_skin:getOutfits")
+	AddEventHandler("esx_skin:getOutfits", function()
+		local xPlayer = ESX.GetPlayerFromId(source)
+		local oSource = source
+		local myOutfits = {}
+
+		MySQL.query('SELECT id, name, ped, components, props FROM outfits WHERE identifier = ?', {xPlayer.identifier}, function(result)
+			for i=1, #result, 1 do
+				table.insert(myOutfits, {id = result[i].id, name = result[i].name, ped = json.decode(result[i].ped), components = json.decode(result[i].components), props = json.decode(result[i].props)})
+			end
+			TriggerClientEvent('esx_skin:sendOutfits', oSource, myOutfits)
+		end)
+	end)
+
+	RegisterServerEvent("esx_skin:deleteOutfit")
+	AddEventHandler("esx_skin:deleteOutfit", function(id)
+		local xPlayer = ESX.GetPlayerFromId(source)
+
+		MySQL.update('DELETE FROM `outfits` WHERE `id` = ?', {id})
+	end)
+
+	RegisterCommand("skin", function(source, args)
+		local player = ESX.GetPlayerFromId(source)
+		if player.getGroup() == 'superadmin' or player.getGroup() == 'admin' then
+			TriggerClientEvent("esx_skin:AdminMenu", source)
+		end
+	end, false)
 end
 
 local identifiers = {}
@@ -36,7 +92,7 @@ local function loadAppearance(source, identifier)
 end
 exports('load', loadAppearance)
 
-RegisterNetEvent('fivem-appearance:save', function(appearance)
+RegisterNetEvent('esx_skin:save', function(appearance)
 	local identifier = identifiers[source]
 
 	if identifier then
