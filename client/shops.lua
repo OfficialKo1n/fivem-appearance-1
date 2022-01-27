@@ -4,20 +4,20 @@ local allMyOutfits = {}
 
 local shops = {
 	clothing = {
-		vec(72.3, -1399.1, 28.4),
-		vec(-708.71, -152.13, 36.4),
-		vec(-165.15, -302.49, 38.6),
-		vec(428.7, -800.1, 28.5),
-		vec(-829.4, -1073.7, 10.3),
-		vec(-1449.16, -238.35, 48.8),
-		vec(11.6, 6514.2, 30.9),
-		vec(122.98, -222.27, 53.5),
+		vec(-169.0882, -298.8425, 39.73331),
+		vec(430.3655, -800.147, 29.4911),
+		vec(-3173.083, 1046.625, 20.86324),
+		vec(-830.0149, -1073.183, 11.3281),
+		vec(1190.329, 2714.304, 38.22261),
+		vec(1697.771, 4830.376, 42.07066),
+		vec(12.44993, 6513.748, 31.87785),
+		--[[vec(122.98, -222.27, 53.5),
 		vec(1696.3, 4829.3, 41.1),
 		vec(618.1, 2759.6, 41.1),
 		vec(1190.6, 2713.4, 37.2),
 		vec(-1193.4, -772.3, 16.3),
 		vec(-3172.5, 1048.1, 19.9),
-		vec(-1108.4, 2708.9, 18.1),
+		vec(-1108.4, 2708.9, 18.1),]]
 		-- add 4th argument to create vector4 and disable blip
 		vec(300.60162353516, -597.76068115234, 42.18409576416, 0),
 		vec(461.47720336914, -998.05444335938, 30.201751708984, 0),
@@ -29,13 +29,11 @@ local shops = {
 	},
 
 	barber = {
-		vec(-814.3, -183.8, 36.6),
-		vec(136.8, -1708.4, 28.3),
-		vec(-1282.6, -1116.8, 6.0),
-		vec(1931.5, 3729.7, 31.8),
-		vec(1212.8, -472.9, 65.2),
-		vec(-34.31, -154.99, 55.8),
-		vec(-278.1, 6228.5, 30.7),
+		vec(137.2754, -1707.463, 29.29163),
+		vec(-814.4005, -183.8495, 37.56887),
+		vec(1931.854, 3729.995, 32.84447),
+		vec(-277.6419, 6227.773, 31.69551),
+		vec(-1282.594, -1116.763, 6.990126),
 	}
 }
 
@@ -140,6 +138,38 @@ RegisterNetEvent('esx_skin:clothingShop', function()
     })
 end)
 
+---- barbershop event
+RegisterNetEvent('esx_skin:barbershop', function()
+	local config = {
+		ped = false,
+		headBlend = false,
+		faceFeatures = false,
+		headOverlays = true,
+		components = false,
+		props = false
+	}
+	
+	local barber = 250
+	local ped = PlayerPedId()
+	local oldPedAppearance = client.getPedAppearance(ped)
+	Wait(150)
+	client.startPlayerCustomization(function(appearance)
+		if (appearance) then
+			ESX.TriggerServerCallback('esx_skin:BuyOutfit', function(result) 
+				if result then
+					TriggerServerEvent('esx_skin:save', appearance)
+				else
+					client.setPlayerAppearance(oldPedAppearance)
+				end
+			end, barber)
+		else
+			client.setPlayerAppearance(oldPedAppearance)
+			print('Canceled')
+		end
+	end, config)
+end)
+
+-- clothingshop menu
 RegisterNetEvent('esx_skin:clothingMenu', function()
 	local config = {
 		ped = false,
