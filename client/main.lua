@@ -320,6 +320,9 @@ exports('setPedAppearance', setPedAppearance);
 
 client = {
 	getPedAppearance = getPedAppearance,
+	getPedModel = getPedModel,
+	getPedComponents = getPedComponents,
+	getPedProps = getPedProps,
 	setPlayerModel = setPlayerModel,
 	setPedHeadBlend = setPedHeadBlend,
 	setPedFaceFeatures = setPedFaceFeatures,
@@ -327,6 +330,9 @@ client = {
 	setPedHeadOverlays = setPedHeadOverlays,
 	setPedEyeColor = setPedEyeColor,
 	setPedComponent = setPedComponent,
+	setPedComponents = setPedComponents,
+	setPedProps = setPedProps,
 	setPedProp = setPedProp,
 	setPlayerAppearance = setPlayerAppearance,
+	
 }
