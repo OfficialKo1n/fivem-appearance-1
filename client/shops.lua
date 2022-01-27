@@ -1,3 +1,7 @@
+local ESX = exports.es_extended:getSharedObject()
+
+local allMyOutfits = {}
+
 local shops = {
 	clothing = {
 		vec(72.3, -1399.1, 28.4),
@@ -56,72 +60,254 @@ end
 for i = 1, #shops.barber do
 	createBlip('Barber shop', 71, 47, 0.7, shops.barber[i])
 end
+---target
 
-local shopType
-local config = {
-	clothing = {
-		ped = true,
+local clothes = {
+	`s_f_y_shop_low`,
+	`s_f_y_shop_mid`
+}
+exports['qtarget']:AddTargetModel(clothes, {
+	options = {
+		{
+			event = 'esx_skin:clothingShop',
+			icon = 'fas fa-tshirt',
+			label = "Clothes Shop"
+		},
+	},
+	distance = 3.5
+})
+
+
+local biker = {
+	`s_f_m_fembarber`
+}
+
+exports['qtarget']:AddTargetModel(biker, {
+	options = {
+		{
+			event = 'esx_skin:barbershop',
+			icon = 'fas fa-cut',
+			label = "Barber Shop"
+		},
+	},
+	distance = 3.5
+})
+
+-- menu
+
+RegisterNetEvent('esx_skin:clothingShop', function()
+    TriggerEvent('nh-context:sendMenu', {
+		{
+            id = 1,
+            header = "Change clothing",
+            txt = "Belanja Pakaian",
+			params = {
+				event = "esx_skin:clothingMenu"
+			}
+        },
+        {
+            id = 2,
+            header = "Change Outfit",
+            txt = "Mengganti Pakaian",
+            params = {
+                event = "esx_skin:pickNewOutfit",
+                args = {
+                    number = 1,
+                    id = 2
+                }
+            }
+        },
+		{
+            id = 3,
+            header = "Save New Outfit",
+            txt = "Menyimpan pakaian saat ini",
+			params = {
+				event = "esx_skin:saveOutfit"
+			}
+        },
+		{
+			id = 4,
+            header = "Delete Outfit",
+            txt = "Menghapus pakaian",
+            params = {
+                event = "esx_skin:deleteOutfitMenu",
+                args = {
+                    number = 1,
+                    id = 2
+                }
+            }
+        }
+    })
+end)
+
+RegisterNetEvent('esx_skin:clothingMenu', function()
+	local config = {
+		ped = false,
 		headBlend = false,
 		faceFeatures = false,
 		headOverlays = false,
 		components = true,
 		props = true
-	},
+	}
 
-	barber = {
+	local price = 250
+	local ped = PlayerPedId()
+	local oldPedAppearance = client.getPedAppearance(ped)
+	Wait(150)
+	client.startPlayerCustomization(function(appearance)
+		if (appearance) then
+			ESX.TriggerServerCallback('esx_skin:BuyOutfit', function(result) 
+				if result then
+					TriggerServerEvent('esx_skin:save', appearance)
+				else
+					client.setPlayerAppearance(oldPedAppearance)
+				end
+			end, price)
+		else
+			client.setPlayerAppearance(oldPedAppearance)
+			print('Canceled')
+		end
+	end, config)
+end)
+
+RegisterNetEvent('esx_skin:pickNewOutfit', function(data)
+    local id = data.id
+    local number = data.number
+	TriggerEvent('esx_skin:getOutfits')
+    TriggerEvent('nh-context:sendMenu', {
+        {
+            id = 1,
+            header = "< Go Back",
+            txt = "",
+            params = {
+                event = "esx_skin:clothingShop"
+            }
+        },
+    })
+	Wait(300)
+	for i=1, #allMyOutfits, 1 do
+		TriggerEvent('nh-context:sendMenu', {
+			{
+				id = (1 + i),
+				header = allMyOutfits[i].name,
+				txt = "",
+				params = {
+					event = 'esx_skin:setOutfit',
+					args = allMyOutfits[i].pedModel, 
+					arg2 = allMyOutfits[i].pedComponents, 
+					arg3 = allMyOutfits[i].pedProps
+				}
+			},
+		})
+	end
+end)
+
+RegisterNetEvent('esx_skin:getOutfits')
+AddEventHandler('esx_skin:getOutfits', function()
+	TriggerServerEvent('esx_skin:getOutfits')
+end)
+
+RegisterNetEvent('esx_skin:sendOutfits')
+AddEventHandler('esx_skin:sendOutfits', function(myOutfits)
+	local Outfits = {}
+	for i=1, #myOutfits, 1 do
+		table.insert(Outfits, {id = myOutfits[i].id, name = myOutfits[i].name, pedModel = myOutfits[i].ped, pedComponents = myOutfits[i].components, pedProps = myOutfits[i].props})
+	end
+	allMyOutfits = Outfits
+end)
+
+RegisterNetEvent('esx_skin:setOutfit')
+AddEventHandler('esx_skin:setOutfit', function(pedModel, pedComponents, pedProps)
+	local playerPed = PlayerPedId()
+	local currentPedModel = client.getPedModel(playerPed)
+	if currentPedModel ~= pedModel then
+    	client.setPlayerModel(pedModel)
+		Wait(500)
+		playerPed = PlayerPedId()
+		client.setPedComponents(playerPed, pedComponents)
+		client.setPedProps(playerPed, pedProps)
+		local appearance = client.getPedAppearance(playerPed)
+		TriggerServerEvent('esx_skin:save', appearance)
+	else
+		client.setPedComponents(playerPed, pedComponents)
+		client.setPedProps(playerPed, pedProps)
+		local appearance = client.getPedAppearance(playerPed)
+		TriggerServerEvent('esx_skin:save', appearance)
+	end
+end)
+
+RegisterNetEvent('esx_skin:saveOutfit', function()
+	local keyboard = exports.ox_inventory:Keyboard('Name Outfit', {''})
+	
+	if keyboard then
+		local playerPed = PlayerPedId()
+		local pedModel = client.getPedModel(playerPed)
+		local pedComponents = client.getPedComponents(playerPed)
+		local pedProps = client.getPedProps(playerPed)
+		Wait(500)
+		TriggerServerEvent('esx_skin:saveOutfit', keyboard[1], pedModel, pedComponents, pedProps)
+
+		ESX.ShowNotification('outfit name ' ..keyboard[1] .. ' saved', 'success')
+	end
+end)
+
+RegisterNetEvent('esx_skin:deleteOutfitMenu', function(data)
+    local id = data.id
+    local number = data.number
+	TriggerEvent('esx_skin:getOutfits')
+	Wait(150)
+    TriggerEvent('nh-context:sendMenu', {
+        {
+            id = 1,
+            header = "< Go Back",
+            txt = "",
+            params = {
+                event = "esx_skin:clothingShop"
+            }
+        },
+    })
+	for i=1, #allMyOutfits, 1 do
+		TriggerEvent('nh-context:sendMenu', {
+			{
+				id = (1 + i),
+				header = allMyOutfits[i].name,
+				txt = "",
+				params = {
+					event = 'esx_skin:deleteOutfit',
+					args = allMyOutfits[i].id
+				}
+			},
+		})
+	end
+end)
+
+RegisterNetEvent('esx_skin:deleteOutfit')
+AddEventHandler('esx_skin:deleteOutfit', function(id)
+	TriggerServerEvent('esx_skin:deleteOutfit', id)
+	ESX.ShowNotification('Outfit Number ' .. id .. ' deleted', 'error')
+end)
+
+----- for admin
+RegisterNetEvent('esx_skin:AdminMenu')
+AddEventHandler('esx_skin:AdminMenu', function(submitCb, cancelCb)
+	local config = {
 		ped = true,
 		headBlend = true,
 		faceFeatures = true,
 		headOverlays = true,
-		components = false,
-		props = false
+		components = true,
+		props = true
 	}
-}
-
-local function getClosestShop(currentShop, coords)
-	local closestShop = #(currentShop.xyz - coords)
-
-	if closestShop > 25 then
-		for name, data in pairs(shops) do
-			for i = 1, #data do
-				Wait(100)
-				local distance = #(data[i].xyz - coords)
-				if distance < closestShop then
-					closestShop = distance
-					currentShop = data[i]
-					shopType = name
-				end
-			end
+	
+	local ped = PlayerPedId()
+	local oldPedAppearance = client.getPedAppearance(ped)
+	Wait(150)
+	client.startPlayerCustomization(function(appearance)
+		if (appearance) then
+			TriggerServerEvent('esx_skin:save', appearance)
+		else
+			client.setPlayerAppearance(oldPedAppearance)
+			print('Canceled')
 		end
-	end
-
-	if closestShop > 25 then
-		Wait(1000)
-	else
-		Wait(0)
-	if closestShop < 7 then
-			if IsControlJustReleased(0, 38) then
-				client.startPlayerCustomization(function(appearance)
-					if (appearance) then
-						if ESX then
-							TriggerServerEvent('esx_skin:save', appearance)
-						else
-							TriggerServerEvent('fivem-appearance:save', appearance)
-						end
-					end
-				end, config[shopType])
-			end
-		end
-	end
-
-	return currentShop
-end
-
-CreateThread(function()
-	local currentShop = vec(0, 0, 0)
-	while true do
-		local playerPed = PlayerPedId()
-		local playerCoords = GetEntityCoords(playerPed)
-		currentShop = getClosestShop(currentShop, playerCoords)
-	end
+	end, config)
 end)
