@@ -1,3 +1,5 @@
+i just wanna share.
+
 edited ox lua fivem-appearance. added save outfits etc
 
 In this case i use nh-context, qtarget, ms-peds, and ox-keyboard from ox_inventory interface.
