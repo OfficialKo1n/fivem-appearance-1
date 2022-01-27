@@ -23,8 +23,8 @@ end
 
 local identifiers = {}
 
-local function saveAppearance(source, appearance)
-	SetResourceKvp(identifier..':appearance', msgpack.pack(appearance))
+local function saveAppearance(identifier, appearance)
+	SetResourceKvp(identifier..':appearance', json.encode(appearance))
 end
 exports('save', saveAppearance)
 
@@ -32,7 +32,7 @@ local function loadAppearance(source, identifier)
 	local appearance = GetResourceKvpString(identifier..':appearance')
 	identifiers[source] = identifier
 
-	return appearance and msgpack.unpack(appearance) or {}
+	return appearance and json.decode(appearance) or {}
 end
 exports('load', loadAppearance)
 
